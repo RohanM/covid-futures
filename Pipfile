@@ -8,6 +8,7 @@ flask = "*"
 app = {editable = true, path = "."}
 flask-sqlalchemy = "*"
 requests = "*"
+requests-mock = "*"
 
 [dev-packages]
 pytest = "*"
