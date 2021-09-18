@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from lib.data_ingester import DataIngester
+from app.lib.data_ingester import DataIngester
 
 ingester = DataIngester()
 ingester.ingest()

@@ -1,6 +1,6 @@
 import pytest
 
-from lib.data_ingester import DataIngester
+from app.lib.data_ingester import DataIngester
 
 @pytest.fixture
 def ingester():
