@@ -1,0 +1,23 @@
+{
+  "name": "covid-futures",
+  "version": "0.0.1",
+  "description": "Predictions about Australia's COVID future.",
+  "directories": {
+    "test": "tests"
+  },
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RohanM/covid-futures.git"
+  },
+  "keywords": [],
+  "author": "Rohan Mitchell",
+  "license": "GPL v3",
+  "bugs": {
+    "url": "https://github.com/RohanM/covid-futures/issues"
+  },
+  "homepage": "https://github.com/RohanM/covid-futures#readme"
+}
