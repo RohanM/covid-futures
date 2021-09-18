@@ -7,6 +7,8 @@ name = "pypi"
 flask = "*"
 app = {editable = true, path = "."}
 flask-sqlalchemy = "*"
+requests = "*"
+requests-mock = "*"
 
 [dev-packages]
 pytest = "*"
@@ -23,3 +25,4 @@ test = "pytest"
 test-watch = "ptw"
 assets-dev = "npx tailwindcss -o app/static/tailwind.css"
 assets-prod = "bash -c 'NODE_ENV=production npx tailwindcss -o app/static/tailwind.css --minify'"
+ingest-data = "./bin/ingest_data.py"
