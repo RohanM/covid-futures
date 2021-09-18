@@ -4,3 +4,5 @@ app/static/tailwind.css
 
 __pycache__/
 *.egg-info/
+
+node_modules/

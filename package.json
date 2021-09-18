@@ -19,5 +19,9 @@
   "bugs": {
     "url": "https://github.com/RohanM/covid-futures/issues"
   },
-  "homepage": "https://github.com/RohanM/covid-futures#readme"
+  "homepage": "https://github.com/RohanM/covid-futures#readme",
+  "devDependencies": {
+    "webpack": "^5.53.0",
+    "webpack-cli": "^4.8.0"
+  }
 }
