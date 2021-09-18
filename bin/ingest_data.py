@@ -1,3 +1,6 @@
 #!/usr/bin/env python3
 
-print("Hello, data ingester!")
+from lib.data_ingester import DataIngester
+
+ingester = DataIngester()
+ingester.ingest()
