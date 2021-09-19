@@ -1,7 +1,8 @@
 {% extends "layout.html" %}
 {% block title %}COVID Futures{% endblock %}
 {% block content %}
-  <h2 class="text-xl font-bold">Victoria</h2>
-
-  <div id="graph-vic" data-labels="{{ labels }}" data-values="{{ values }}"></div>
+  {% for state, data in states.items() %}
+    <h2 class="text-xl font-bold">{{ state | upper }}</h2>
+    <div class="graph" id="graph-{{ state | lower }}" data-state="{{ state | lower }}" data-labels='{{ data[0] | tojson }}' data-values="{{ data[1] | tojson | safe }}"></div>
+  {% endfor %}
 {% endblock %}

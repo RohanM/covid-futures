@@ -18,4 +18,7 @@ def db_seeds(database):
     db.session.add(Case(date=datetime.date(2021, 9, 1), state='VIC', confirmed=10))
     db.session.add(Case(date=datetime.date(2021, 9, 2), state='VIC', confirmed=20))
     db.session.add(Case(date=datetime.date(2021, 9, 3), state='VIC', confirmed=30))
+    db.session.add(Case(date=datetime.date(2021, 9, 1), state='NSW', confirmed=100))
+    db.session.add(Case(date=datetime.date(2021, 9, 2), state='NSW', confirmed=200))
+    db.session.add(Case(date=datetime.date(2021, 9, 3), state='NSW', confirmed=300))
     db.session.commit()
