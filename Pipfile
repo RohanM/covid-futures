@@ -10,6 +10,7 @@ flask-sqlalchemy = "*"
 requests = "*"
 requests-mock = "*"
 python-dotenv = "*"
+pymysql = "*"
 
 [dev-packages]
 pytest = "*"
