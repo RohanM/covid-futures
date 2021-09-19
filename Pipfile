@@ -9,6 +9,7 @@ app = {editable = true, path = "."}
 flask-sqlalchemy = "*"
 requests = "*"
 requests-mock = "*"
+python-dotenv = "*"
 
 [dev-packages]
 pytest = "*"
