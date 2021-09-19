@@ -23,6 +23,9 @@
   },
   "homepage": "https://github.com/RohanM/covid-futures#readme",
   "devDependencies": {
+    "@babel/core": "7.15.5",
+    "@babel/preset-env": "7.15.6",
+    "babel-loader": "8.2.2",
     "css-loader": "6.3.0",
     "style-loader": "3.2.1",
     "webpack": "^5.53.0",
