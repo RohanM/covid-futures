@@ -14,5 +14,6 @@ def index():
 
     return render_template(
         'index.html',
-        labels=json.dumps(labels).replace('"', "'"),
-        values=json.dumps(values))
+        labels=json.dumps(labels),
+        values=json.dumps(values)
+    )
