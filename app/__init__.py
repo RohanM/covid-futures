@@ -11,7 +11,7 @@ def create_app(test_config=None):
     if test_config:
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
     else:
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/dev.db'
+        app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('COVID_FUTURES_DATABASE_URI') or 'sqlite:////tmp/dev.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     # Database
