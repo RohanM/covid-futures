@@ -11,18 +11,19 @@ Install pipenv:
 pip install pipenv
 ```
 
-Install dependencies:
+Install dependencies (both Python and JS):
 
 ```
 pipenv install
+npm install
 ```
 
 Build assets:
 
 ```
-pipenv run assets-dev
+npm run webpack:dev
 # or
-pipenv run assets-prod
+npm run webpack:prod
 ```
 
 Run the development server:

@@ -1,6 +1,9 @@
 import { bb, line } from 'billboard.js';
 import "billboard.js/dist/billboard.css";
 
+import "tailwindcss/tailwind.css"
+
+
 window.onload = () => {
   document.querySelectorAll('.graph').forEach((graph) => {
     const state = graph.dataset.state;
