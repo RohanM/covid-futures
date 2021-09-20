@@ -26,6 +26,18 @@ npm run webpack:dev
 npm run webpack:prod
 ```
 
+Configure the database (for development and testing):
+
+```
+echo "export COVID_FUTURES_DATABASE_URI_TEST='mysql+pymysql://covid_futures:covid_futures@localhost/covid_futures_test'" >> .env
+echo "export COVID_FUTURES_DATABASE_URI='mysql+pymysql://covid_futures:covid_futures@localhost/covid_futures_dev'" >> .env
+```
+
+```
+pipenv run load-schema
+pipenv run ingest-data
+```
+
 Run the development server:
 
 ```

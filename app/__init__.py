@@ -9,9 +9,9 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
 
     if test_config:
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+        app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('COVID_FUTURES_DATABASE_URI_TEST')
     else:
-        app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('COVID_FUTURES_DATABASE_URI') or 'sqlite:////tmp/dev.db'
+        app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('COVID_FUTURES_DATABASE_URI')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     # Database

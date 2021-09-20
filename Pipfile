@@ -11,6 +11,7 @@ requests = "*"
 requests-mock = "*"
 python-dotenv = "*"
 pymysql = "*"
+cryptography = "*"
 
 [dev-packages]
 pytest = "*"
