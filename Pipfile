@@ -12,6 +12,7 @@ requests-mock = "*"
 python-dotenv = "*"
 pymysql = "*"
 cryptography = "*"
+flask-migrate = "*"
 
 [dev-packages]
 pytest = "*"
