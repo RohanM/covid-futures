@@ -1,6 +1,7 @@
 import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
 db = SQLAlchemy()
 
@@ -16,6 +17,7 @@ def create_app(test_config=None):
 
     # Database
     db.init_app(app)
+    migrate = Migrate(app, db)
 
     # Blueprints
     from . import index
