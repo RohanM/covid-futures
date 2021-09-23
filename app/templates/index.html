@@ -7,7 +7,7 @@
     {% for state, data in states.items() %}
       <div>
         <h2 class="text-xl font-bold">{{ state | upper }}</h2>
-        <div class="graph" id="graph-{{ state | lower }}" data-state="{{ state | lower }}" data-labels='{{ data[0] | tojson }}' data-values="{{ data[1] | tojson | safe }}"></div>
+        <div class="graph" id="graph-{{ state | lower }}" data-state="{{ state | lower }}" data-labels='{{ data[0] | tojson }}' data-values="{{ data[1] | tojson | safe }}" data-max-y="{{ max_confirmed }}"></div>
       </div>
     {% endfor %}
   </div>

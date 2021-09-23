@@ -22,10 +22,15 @@ def index():
 
     return render_template(
         'index.html',
-        states=state_data
+        states=state_data,
+        max_confirmed=get_max_confirmed()
     )
 
 def get_states():
     """Get all states, those with the most total cases first"""
     states = db.session.query(Case.state).group_by(Case.state).order_by(func.sum(Case.confirmed).desc()).all()
     return [state[0] for state in states]
+
+def get_max_confirmed():
+    """Returns the maximum confirmed cases on any one day"""
+    return db.session.query(func.max(Case.confirmed)).scalar()

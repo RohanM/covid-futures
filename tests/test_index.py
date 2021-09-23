@@ -15,3 +15,7 @@ def test_graph_data(db_seeds, index):
 
 def test_ordered_by_total_cases(db_seeds, index):
     assert list(map(lambda graph: graph['id'], index.select('.graph'))) == ['graph-nsw', 'graph-vic']
+
+def test_consistent_y_axis(db_seeds, index):
+    assert index.select('#graph-vic')[0]['data-max-y'] == '300'
+    assert index.select('#graph-nsw')[0]['data-max-y'] == '300'

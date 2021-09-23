@@ -9,6 +9,7 @@ window.onload = () => {
     const state = graph.dataset.state;
     const labels = JSON.parse(graph.dataset.labels);
     const values = JSON.parse(graph.dataset.values);
+    const maxY = parseInt(graph.dataset.maxY);
 
     var chart = bb.generate({
       bindto: `#graph-${state}`,
@@ -21,12 +22,18 @@ window.onload = () => {
           ["Cases"].concat(values),
         ],
       },
+      line: {
+        point: false,
+      },
       axis: {
         x: {
           type: 'timeseries',
           tick: {
             format: '%e %b %Y',
           },
+        },
+        y: {
+          max: maxY,
         },
       },
     });
