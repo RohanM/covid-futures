@@ -1,4 +1,5 @@
 import numpy as np
+from functools import cached_property
 from app import db
 from app.lib.models import Case
 
@@ -7,9 +8,11 @@ class MLModelData:
         self.__load_cases()
         self.__calc_normalised_cases()
 
+    @cached_property
     def mean(self):
         return np.mean(self.__all_cases())
 
+    @cached_property
     def std(self):
         return np.std(self.__all_cases())
 
@@ -25,4 +28,4 @@ class MLModelData:
         self.normalised_cases = { k:self.__normalise(v) for k,v in self.cases.items() }
 
     def __normalise(self, values):
-        return [(v - self.mean()) / self.std() for v in values]
+        return [(v - self.mean) / self.std for v in values]
