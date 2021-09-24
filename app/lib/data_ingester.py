@@ -9,17 +9,23 @@ class DataIngester:
     URL = "https://github.com/M3IT/COVID-19_Data/raw/master/Data/COVID_AU_state.csv"
 
     def ingest(self):
+        cases = []
         for row in self.csv_reader():
-            self.upsert_row(row)
+            cases.append(self.case_for_row(row).as_dict())
+        self.bulk_insert_cases(cases)
+
+    def bulk_insert_cases(self, cases):
+        """Insert cases with MySQL INSERT IGNORE syntax, which ignores duplicate rows"""
+        insert = Case.__table__.insert().prefix_with(' IGNORE').values(cases)
+        db.session.execute(insert)
         db.session.commit()
 
-    def upsert_row(self, row):
-        case = Case(
+    def case_for_row(self, row):
+        return Case(
             date=datetime.datetime.strptime(row['date'], '%Y-%m-%d'),
             state=row['state_abbrev'],
             confirmed=row['confirmed']
         )
-        db.session.add(case)
 
     def csv_reader(self):
         return csv.DictReader(self.csv_data())
