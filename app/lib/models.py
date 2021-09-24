@@ -13,6 +13,11 @@ class Case(db.Model):
     )
 
     @staticmethod
+    def confirmed_for_state(state):
+        cases = Case.query.with_entities(Case.confirmed).filter(Case.state == state).order_by(Case.date.asc()).all()
+        return [case[0] for case in cases]
+
+    @staticmethod
     def states():
         """Get all states, those with the most total cases first"""
         states = db.session.query(Case.state).group_by(Case.state).order_by(func.sum(Case.confirmed).desc()).all()
