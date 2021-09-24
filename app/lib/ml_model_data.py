@@ -5,6 +5,7 @@ from app.lib.models import Case
 class MLModelData:
     def load(self):
         self.__load_cases()
+        self.__calc_normalised_cases()
 
     def mean(self):
         return np.mean(self.__all_cases())
@@ -19,3 +20,9 @@ class MLModelData:
         self.cases = {}
         for state in Case.states():
             self.cases[state] = Case.confirmed_for_state(state)
+
+    def __calc_normalised_cases(self):
+        self.normalised_cases = { k:self.__normalise(v) for k,v in self.cases.items() }
+
+    def __normalise(self, values):
+        return [(v - self.mean()) / self.std() for v in values]
