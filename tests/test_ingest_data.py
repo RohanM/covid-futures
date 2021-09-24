@@ -29,3 +29,9 @@ def test_ingest_data(app, database, mock_covid_au_state_csv, ingester):
         assert case.date == datetime.date(2020, 1, 25)
         assert case.state == 'ACT'
         assert case.confirmed == 0
+
+def test_ingest_is_idempotent(app, database, mock_covid_au_state_csv, ingester):
+    with app.app_context():
+        ingester.ingest()
+        ingester.ingest()
+        assert Case.query.count() == 4816
