@@ -2,16 +2,13 @@ import json
 from flask import Blueprint
 from flask import render_template
 
-from sqlalchemy.sql import functions as func
-
-from app import db
 from app.lib.models import Case
 
 bp = Blueprint('index', __name__)
 
 @bp.route("/")
 def index():
-    states = get_states()
+    states = Case.states()
     state_data = {}
 
     for state in states:
@@ -23,14 +20,5 @@ def index():
     return render_template(
         'index.html',
         states=state_data,
-        max_confirmed=get_max_confirmed()
+        max_confirmed=Case.max_confirmed()
     )
-
-def get_states():
-    """Get all states, those with the most total cases first"""
-    states = db.session.query(Case.state).group_by(Case.state).order_by(func.sum(Case.confirmed).desc()).all()
-    return [state[0] for state in states]
-
-def get_max_confirmed():
-    """Returns the maximum confirmed cases on any one day"""
-    return db.session.query(func.max(Case.confirmed)).scalar()
