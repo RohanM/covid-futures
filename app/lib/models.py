@@ -11,5 +11,8 @@ class Case(db.Model):
         UniqueConstraint('date', 'state', name='uq_cases_date_state'),
     )
 
+    def as_dict(self):
+        return { k:v for k,v in self.__dict__.items() if k in Case.__table__.columns.keys() }
+
     def __repr(self):
         return '<Case %d>' % id
