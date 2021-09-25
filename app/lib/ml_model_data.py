@@ -8,9 +8,11 @@ from app.lib.models import Case
 class MLModelData:
     def __init__(self, input_window=30, output_window=30, train_valid_split=0.8, batch_size=64):
         """
+        Parameters:
         input_window: Number of days of data used as input to the prediction
         output_window: Length of the prediction in days
         train_valid_split: What portion of data to use for training (the remainder is held back for validation)
+        batch_size: Size of batch for the DataLoader to provide
         """
         self.input_window = input_window
         self.output_window = output_window
@@ -18,6 +20,13 @@ class MLModelData:
         self.batch_size = batch_size
 
     def load(self):
+        """
+        Load training data and provide torch DataLoaders for training and validation.
+
+        Main outputs:
+        - self.dataloader_train
+        - self.dataloader_valid
+        """
         self.__load_cases()
         self.__calc_normalised_cases()
         self.__calc_windowed_cases()
