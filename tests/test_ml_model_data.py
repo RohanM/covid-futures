@@ -20,19 +20,19 @@ def normalised_extended_cases():
     }
 
 
-def test_ml_model_data_mean(app, db_simple_cases):
+def test_data_mean(app, db_simple_cases):
     with app.app_context():
         data = MLModelData()
         data.load()
         assert data.mean == 110
 
-def test_ml_model_data_std(app, db_simple_cases):
+def test_data_std(app, db_simple_cases):
     with app.app_context():
         data = MLModelData()
         data.load()
         assert data.std == pytest.approx(107, 0.1)
 
-def test_ml_model_normalised_cases(app, db_extended_cases, normalised_extended_cases):
+def test_normalised_cases(app, db_extended_cases, normalised_extended_cases):
     with app.app_context():
         data = MLModelData()
         data.load()
@@ -53,7 +53,7 @@ def test_ml_model_normalised_cases(app, db_extended_cases, normalised_extended_c
             ],
         }
 
-def test_ml_model_windowed_cases(app, db_extended_cases, normalised_extended_cases):
+def test_windowed_cases(app, db_extended_cases, normalised_extended_cases):
     with app.app_context():
         data = MLModelData(input_window=2, output_window=2)
         data.load()
@@ -78,7 +78,7 @@ def test_ml_model_windowed_cases(app, db_extended_cases, normalised_extended_cas
             ]
         }
 
-def test_ml_model_split_train_validation(app, db_extended_cases, normalised_extended_cases):
+def test_split_train_validation(app, db_extended_cases, normalised_extended_cases):
     with app.app_context():
         data = MLModelData(input_window=1, output_window=1, train_valid_split=0.75)
         data.load()
@@ -91,7 +91,7 @@ def test_ml_model_split_train_validation(app, db_extended_cases, normalised_exte
         assert len(data.valid_y['NSW']) == 1
         assert len(data.valid_y['VIC']) == 1
 
-def test_ml_model_combine_data(app, db_extended_cases, normalised_extended_cases):
+def test_combine_data(app, db_extended_cases, normalised_extended_cases):
     with app.app_context():
         data = MLModelData(input_window=1, output_window=1, train_valid_split=0.75)
         data.load()
@@ -100,7 +100,7 @@ def test_ml_model_combine_data(app, db_extended_cases, normalised_extended_cases
         assert len(data.all_valid.x) == 2
         assert len(data.all_valid.y) == 2
 
-def test_ml_model_dataloader(app, db_extended_cases, normalised_extended_cases):
+def test_dataloader(app, db_extended_cases, normalised_extended_cases):
     with app.app_context():
         data = MLModelData(input_window=1, output_window=1, train_valid_split=0.75)
         data.load()
