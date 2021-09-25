@@ -1,11 +1,12 @@
 import numpy as np
+from torch.utils.data import DataLoader
 from functools import cached_property
 from app import db
 from app.lib.dataset import Dataset
 from app.lib.models import Case
 
 class MLModelData:
-    def __init__(self, input_window=30, output_window=30, train_valid_split=0.8):
+    def __init__(self, input_window=30, output_window=30, train_valid_split=0.8, batch_size=64):
         """
         input_window: Number of days of data used as input to the prediction
         output_window: Length of the prediction in days
@@ -14,6 +15,7 @@ class MLModelData:
         self.input_window = input_window
         self.output_window = output_window
         self.train_valid_split = train_valid_split
+        self.batch_size = batch_size
 
     def load(self):
         self.__load_cases()
@@ -21,6 +23,7 @@ class MLModelData:
         self.__calc_windowed_cases()
         self.__split_train_valid()
         self.__combine_states()
+        self.__init_dataloaders()
 
     @cached_property
     def mean(self):
@@ -74,6 +77,12 @@ class MLModelData:
             sum(self.valid_x.values(), []),
             sum(self.valid_y.values(), [])
         )
+
+    def __init_dataloaders(self):
+        if len(self.all_train) > 0:
+            self.dataloader_train = DataLoader(self.all_train, self.batch_size, shuffle=True)
+        if len(self.all_valid) > 0:
+            self.dataloader_valid = DataLoader(self.all_valid, self.batch_size, shuffle=False)
 
     def __normalise(self, values):
         return [(v - self.mean) / self.std for v in values]

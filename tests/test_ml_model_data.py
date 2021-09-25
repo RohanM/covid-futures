@@ -1,4 +1,5 @@
 import pytest
+from torch.utils.data import DataLoader
 
 from app.lib.ml_model_data import MLModelData
 
@@ -98,3 +99,10 @@ def test_ml_model_combine_data(app, db_extended_cases, normalised_extended_cases
         assert len(data.all_train.y) == 6
         assert len(data.all_valid.x) == 2
         assert len(data.all_valid.y) == 2
+
+def test_ml_model_dataloader(app, db_extended_cases, normalised_extended_cases):
+    with app.app_context():
+        data = MLModelData(input_window=1, output_window=1, train_valid_split=0.75)
+        data.load()
+        assert type(data.dataloader_train) == DataLoader
+        assert type(data.dataloader_valid) == DataLoader
