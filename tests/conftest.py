@@ -14,7 +14,7 @@ def database(app):
     return db
 
 @pytest.fixture
-def db_seeds(database):
+def db_simple_cases(database):
     db.session.add(Case(date=datetime.date(2021, 9, 1), state='VIC', confirmed=10))
     db.session.add(Case(date=datetime.date(2021, 9, 2), state='VIC', confirmed=20))
     db.session.add(Case(date=datetime.date(2021, 9, 3), state='VIC', confirmed=30))
