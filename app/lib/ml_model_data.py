@@ -1,4 +1,4 @@
-import numpy as np
+from torch import tensor
 from torch.utils.data import DataLoader
 from functools import cached_property
 from app import db
@@ -27,11 +27,11 @@ class MLModelData:
 
     @cached_property
     def mean(self):
-        return np.mean(self.__all_cases())
+        return tensor(self.__all_cases()).float().mean().item()
 
     @cached_property
     def std(self):
-        return np.std(self.__all_cases())
+        return tensor(self.__all_cases()).float().std(unbiased=False).item()
 
     def __all_cases(self):
         return sum(self.cases.values(), [])
