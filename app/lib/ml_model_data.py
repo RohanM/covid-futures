@@ -1,6 +1,7 @@
 import numpy as np
 from functools import cached_property
 from app import db
+from app.lib.dataset import Dataset
 from app.lib.models import Case
 
 class MLModelData:
@@ -19,6 +20,7 @@ class MLModelData:
         self.__calc_normalised_cases()
         self.__calc_windowed_cases()
         self.__split_train_valid()
+        self.__combine_states()
 
     @cached_property
     def mean(self):
@@ -61,6 +63,17 @@ class MLModelData:
         self.train_y = { k:self.__split_one_train_valid(v, True) for k,v in self.y.items() }
         self.valid_x = { k:self.__split_one_train_valid(v, False) for k,v in self.x.items() }
         self.valid_y = { k:self.__split_one_train_valid(v, False) for k,v in self.y.items() }
+
+    def __combine_states(self):
+        """Combine data from states and present in a Dataset"""
+        self.all_train = Dataset(
+            sum(self.train_x.values(), []),
+            sum(self.train_y.values(), [])
+        )
+        self.all_valid = Dataset(
+            sum(self.valid_x.values(), []),
+            sum(self.valid_y.values(), [])
+        )
 
     def __normalise(self, values):
         return [(v - self.mean) / self.std for v in values]

@@ -89,3 +89,12 @@ def test_ml_model_split_train_validation(app, db_extended_cases, normalised_exte
         assert len(data.valid_x['VIC']) == 1
         assert len(data.valid_y['NSW']) == 1
         assert len(data.valid_y['VIC']) == 1
+
+def test_ml_model_combine_data(app, db_extended_cases, normalised_extended_cases):
+    with app.app_context():
+        data = MLModelData(input_window=1, output_window=1, train_valid_split=0.75)
+        data.load()
+        assert len(data.all_train.x) == 6
+        assert len(data.all_train.y) == 6
+        assert len(data.all_valid.x) == 2
+        assert len(data.all_valid.y) == 2
