@@ -51,3 +51,20 @@ def test_ml_model_normalised_cases(app, db_extended_cases, normalised_extended_c
                 normalised_extended_cases[50],
             ],
         }
+
+def test_ml_model_windowed_cases(app, db_extended_cases, normalised_extended_cases):
+    with app.app_context():
+        data = MLModelData(input_window=2, output_window=2)
+        data.load()
+        assert data.x == [
+            [normalised_extended_cases[100], normalised_extended_cases[200]],
+            [normalised_extended_cases[200], normalised_extended_cases[300]],
+            [normalised_extended_cases[10], normalised_extended_cases[20]],
+            [normalised_extended_cases[20], normalised_extended_cases[30]],
+        ]
+        assert data.y == [
+            [normalised_extended_cases[300], normalised_extended_cases[400]],
+            [normalised_extended_cases[400], normalised_extended_cases[500]],
+            [normalised_extended_cases[30], normalised_extended_cases[40]],
+            [normalised_extended_cases[40], normalised_extended_cases[50]],
+        ]
