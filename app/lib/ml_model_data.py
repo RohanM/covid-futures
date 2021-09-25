@@ -41,13 +41,16 @@ class MLModelData:
         and build training data of the form: history => prediction
         """
         window = self.input_window + self.output_window
-        self.x = []
-        self.y = []
+        self.x = {}
+        self.y = {}
         for state in Case.states():
+            self.x[state] = []
+            self.y[state] = []
             state_data = self.normalised_cases[state]
+
             for i in range(len(state_data) - window + 1):
-                self.x.append(state_data[i:i+self.input_window])
-                self.y.append(state_data[i+self.input_window:i+window])
+                self.x[state].append(state_data[i:i+self.input_window])
+                self.y[state].append(state_data[i+self.input_window:i+window])
 
     def __normalise(self, values):
         return [(v - self.mean) / self.std for v in values]
