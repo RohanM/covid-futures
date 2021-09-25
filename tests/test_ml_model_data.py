@@ -76,3 +76,16 @@ def test_ml_model_windowed_cases(app, db_extended_cases, normalised_extended_cas
                 [normalised_extended_cases[40], normalised_extended_cases[50]],
             ]
         }
+
+def test_ml_model_split_train_validation(app, db_extended_cases, normalised_extended_cases):
+    with app.app_context():
+        data = MLModelData(input_window=1, output_window=1, train_valid_split=0.75)
+        data.load()
+        assert len(data.train_x['NSW']) == 3
+        assert len(data.train_x['VIC']) == 3
+        assert len(data.train_y['NSW']) == 3
+        assert len(data.train_y['VIC']) == 3
+        assert len(data.valid_x['NSW']) == 1
+        assert len(data.valid_x['VIC']) == 1
+        assert len(data.valid_y['NSW']) == 1
+        assert len(data.valid_y['VIC']) == 1
