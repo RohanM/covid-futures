@@ -62,6 +62,15 @@ pipenv run train-model
 ```
 
 
+## Making predictions
+
+Run inference and save predictions to the database:
+
+```
+pipenv run predict
+```
+
+
 ## Deployment
 
 The production database URL is configured via the `COVID_FUTURES_DATABASE_URI` environment variable. For
