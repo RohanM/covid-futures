@@ -2,7 +2,7 @@ import pytest
 import datetime
 
 from app import create_app, db
-from app.lib.models import Case
+from app.lib.models import Case, Prediction, PredictionData
 
 @pytest.fixture
 def app(): return create_app(True)
@@ -11,6 +11,8 @@ def app(): return create_app(True)
 def database(app):
     db.create_all()
     Case.query.delete()
+    PredictionData.query.delete()
+    Prediction.query.delete()
     return db
 
 @pytest.fixture

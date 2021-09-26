@@ -34,3 +34,24 @@ class Case(db.Model):
 
     def __repr(self):
         return '<Case %d>' % id
+
+
+class Prediction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    state = db.Column(db.String(10), nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint('name', 'state', name='uq_predictions_name_state'),
+    )
+
+
+class PredictionData(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    prediction_id = db.Column(db.Integer, db.ForeignKey('prediction.id'), nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    confirmed = db.Column(db.Integer, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint('prediction_id', 'date', name='uq_prediction_data_prediction_id_date'),
+    )
