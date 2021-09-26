@@ -23,6 +23,7 @@ pytest = "*"
 pytest-flask = "*"
 pytest-watch = "*"
 bs4 = "*"
+jupyter = "*"
 
 [requires]
 python_version = "3.8"
