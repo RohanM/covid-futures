@@ -12,6 +12,11 @@ def test_fit(app, db_extended_cases):
         assert len(train_losses) == 2
         assert len(valid_losses) == 2
 
+def test_predict():
+    model = MLModel(input_window=2, output_window=2)
+    prediction = model.predict([1, 2])
+    assert len(prediction) == 2
+
 def test_save_load():
     model = MLModel(input_window=2, output_window=2)
     model.save('./tests/model.pt')

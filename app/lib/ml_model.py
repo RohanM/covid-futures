@@ -1,5 +1,5 @@
 import torch
-from torch import nn, optim
+from torch import nn, optim, tensor
 from app.lib.lambda_layer import Lambda
 from torch.optim.lr_scheduler import OneCycleLR
 
@@ -44,6 +44,10 @@ class MLModel:
             scheduler.step()
 
         return train_losses, valid_losses
+
+    def predict(self, x):
+        """Given a list of history data, performs inference and returns predictions"""
+        return self.__model(tensor([x]).float()).squeeze()
 
     def save(self, path):
         torch.save(self.__model.state_dict(), path)
