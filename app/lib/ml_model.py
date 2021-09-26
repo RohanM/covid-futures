@@ -40,6 +40,7 @@ class MLModel:
             valid_losses.append(
                 self.__evaluate(dataloader_valid, loss_func)
             )
+            print(f"{epoch}, {train_losses[-1]}, {valid_losses[-1]}")
             scheduler.step()
 
         return train_losses, valid_losses
@@ -61,7 +62,7 @@ class MLModel:
             loss.backward()
             self.__opt.step()
             self.__opt.zero_grad()
-        return total_loss / len(dataloader)
+        return (total_loss / len(dataloader)).item()
 
     def __evaluate(self, dataloader, loss_func):
         self.__model.eval()
@@ -70,4 +71,4 @@ class MLModel:
             for xb, yb in dataloader:
                 pred = self.__model(xb)
                 total_loss += loss_func(pred, yb)
-        return total_loss / len(dataloader)
+        return (total_loss / len(dataloader)).item()
