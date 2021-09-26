@@ -24,6 +24,7 @@ pytest-flask = "*"
 pytest-watch = "*"
 bs4 = "*"
 jupyter = "*"
+matplotlib = "*"
 
 [requires]
 python_version = "3.8"
