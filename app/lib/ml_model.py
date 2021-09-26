@@ -17,11 +17,7 @@ class MLModel:
 
         self.__model = nn.Sequential(
             Lambda(add_channel),
-            nn.Conv1d(          1, num_filters, 15, padding=7), nn.ReLU(),
-            nn.Conv1d(num_filters, num_filters, 13, padding=6), nn.ReLU(),
-            nn.Conv1d(num_filters, num_filters, 11, padding=5), nn.ReLU(),
-            nn.Conv1d(num_filters, num_filters, 9,  padding=4), nn.ReLU(),
-            nn.Conv1d(num_filters, num_filters, 7,  padding=3), nn.ReLU(),
+            nn.Conv1d(          1, num_filters, 7,  padding=3), nn.ReLU(),
             nn.Conv1d(num_filters, num_filters, 5,  padding=2), nn.ReLU(),
             nn.Conv1d(num_filters, num_filters, 3,  padding=1), nn.ReLU(),
             nn.Conv1d(num_filters, num_filters, 3,  padding=1), nn.ReLU(),
