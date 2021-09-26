@@ -1,3 +1,4 @@
+import datetime
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.sql import functions as func
 from app import db
@@ -48,6 +49,23 @@ class Prediction(db.Model):
     __table_args__ = (
         UniqueConstraint('name', 'state', name='uq_predictions_name_state'),
     )
+
+    @staticmethod
+    def save(state, date, data):
+        name = date.strftime('%d-%m-%Y')
+        prediction = Prediction(name=name, state=state)
+        db.session.add(prediction)
+        db.session.commit()
+
+        for i in range(len(data)):
+            db.session.add(
+                PredictionData(
+                    prediction_id=prediction.id,
+                    date=date + datetime.timedelta(days=i),
+                    confirmed=data[i],
+                )
+            )
+        db.session.commit()
 
 
 class PredictionData(db.Model):
