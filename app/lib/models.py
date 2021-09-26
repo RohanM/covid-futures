@@ -28,6 +28,10 @@ class Case(db.Model):
         """Returns the maximum confirmed cases on any one day"""
         return db.session.query(func.max(Case.confirmed)).scalar()
 
+    @staticmethod
+    def latest_date(state):
+        """Returns the most recent date we have data for the specified state"""
+        return db.session.query(Case.date).order_by(Case.date.desc()).limit(1).scalar()
 
     def as_dict(self):
         return { k:v for k,v in self.__dict__.items() if k in Case.__table__.columns.keys() }
