@@ -1,15 +1,18 @@
 import torch
-from torch import nn, optim
+from torch import nn, optim, tensor
 from app.lib.lambda_layer import Lambda
 from torch.optim.lr_scheduler import OneCycleLR
 
 class MLModel:
-    def __init__(self, input_window=30, output_window=30):
+    def __init__(self, input_window=30, output_window=30, data_mean=0, data_std=1):
         """
         Parameters:
         input_window: Size of the input data (in days)
         output_window: Length of the prediction (in days)
         """
+        self.data_mean = data_mean
+        self.data_std = data_std
+
         def add_channel(x): return x.unsqueeze(dim=1)
         def flatten(x): return x.view(x.shape[0], -1)
 
@@ -45,11 +48,23 @@ class MLModel:
 
         return train_losses, valid_losses
 
+    def predict(self, x):
+        """Given a list of history data, performs inference and returns predictions"""
+        return self.__model(tensor([x]).float()).squeeze() * self.data_std + self.data_mean
+
     def save(self, path):
-        torch.save(self.__model.state_dict(), path)
+        checkpoint = {
+            'data_mean': self.data_mean,
+            'data_std': self.data_std,
+            'model': self.__model.state_dict(),
+        }
+        torch.save(checkpoint, path)
 
     def load(self, path):
-        self.__model.load_state_dict(torch.load(path))
+        checkpoint = torch.load(path)
+        self.data_mean = checkpoint['data_mean']
+        self.data_std = checkpoint['data_std']
+        self.__model.load_state_dict(checkpoint['model'])
         self.__model.eval()
 
     def __train(self, dataloader, loss_func):
