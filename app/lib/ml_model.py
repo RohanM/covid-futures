@@ -44,6 +44,13 @@ class MLModel:
 
         return train_losses, valid_losses
 
+    def save(self, path):
+        torch.save(self.__model.state_dict(), path)
+
+    def load(self, path):
+        self.__model.load_state_dict(torch.load(path))
+        self.__model.eval()
+
     def __train(self, dataloader, loss_func):
         """Perform one training cycle and return the average loss."""
         self.__model.train()
