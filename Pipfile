@@ -23,6 +23,8 @@ pytest = "*"
 pytest-flask = "*"
 pytest-watch = "*"
 bs4 = "*"
+jupyter = "*"
+matplotlib = "*"
 
 [requires]
 python_version = "3.8"
@@ -33,3 +35,4 @@ test = "pytest"
 test-watch = "ptw"
 load-schema = "./bin/load_schema.py"
 ingest-data = "./bin/ingest_data.py"
+train-model = "./bin/train_model.py"

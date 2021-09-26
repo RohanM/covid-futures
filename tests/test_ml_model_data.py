@@ -78,7 +78,7 @@ def test_windowed_cases(app, db_extended_cases, normalised_extended_cases):
             ]
         }
 
-def test_split_train_validation(app, db_extended_cases, normalised_extended_cases):
+def test_split_train_validation(app, db_extended_cases):
     with app.app_context():
         data = MLModelData(input_window=1, output_window=1, train_valid_split=0.75)
         data.load()
@@ -91,7 +91,7 @@ def test_split_train_validation(app, db_extended_cases, normalised_extended_case
         assert len(data.valid_y['NSW']) == 1
         assert len(data.valid_y['VIC']) == 1
 
-def test_combine_data(app, db_extended_cases, normalised_extended_cases):
+def test_combine_data(app, db_extended_cases):
     with app.app_context():
         data = MLModelData(input_window=1, output_window=1, train_valid_split=0.75)
         data.load()
@@ -100,7 +100,7 @@ def test_combine_data(app, db_extended_cases, normalised_extended_cases):
         assert len(data.all_valid.x) == 2
         assert len(data.all_valid.y) == 2
 
-def test_dataloader(app, db_extended_cases, normalised_extended_cases):
+def test_dataloader(app, db_extended_cases):
     with app.app_context():
         data = MLModelData(input_window=1, output_window=1, train_valid_split=0.75)
         data.load()
