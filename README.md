@@ -52,6 +52,16 @@ pipenv run test
 pipenv run test-watch
 ```
 
+
+## Training
+
+To train the model from scratch:
+
+```
+pipenv run train-model
+```
+
+
 ## Deployment
 
 The production database URL is configured via the `COVID_FUTURES_DATABASE_URI` environment variable. For
