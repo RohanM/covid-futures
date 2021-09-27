@@ -70,6 +70,11 @@ Run inference and save predictions to the database:
 pipenv run predict
 ```
 
+To create weekly predictions for the whole dataset (mostly to test the model):
+
+```
+pipenv run predict-weekly
+```
 
 ## Deployment
 
