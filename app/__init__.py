@@ -26,6 +26,7 @@ def create_app(test_config=None):
     else:
         app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('COVID_FUTURES_DATABASE_URI')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 280}
 
     # Database
     db.init_app(app)
