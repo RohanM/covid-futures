@@ -16,6 +16,11 @@ def test_max_confirmed(app, db_simple_cases):
     with app.app_context():
         assert Case.max_confirmed() == 300
 
+def test_earliest_date(app, db_simple_cases):
+    with app.app_context():
+        assert Case.earliest_date('NSW') == datetime.date(2021, 9, 1)
+        assert Case.earliest_date('VIC') == datetime.date(2021, 9, 1)
+
 def test_latest_date(app, db_simple_cases):
     with app.app_context():
         assert Case.latest_date('NSW') == datetime.date(2021, 9, 3)

@@ -30,6 +30,11 @@ class Case(db.Model):
         return db.session.query(func.max(Case.confirmed)).scalar()
 
     @staticmethod
+    def earliest_date(state):
+        """Returns the earliest date we have data for the specified state"""
+        return db.session.query(Case.date).order_by(Case.date.asc()).limit(1).scalar()
+
+    @staticmethod
     def latest_date(state):
         """Returns the most recent date we have data for the specified state"""
         return db.session.query(Case.date).order_by(Case.date.desc()).limit(1).scalar()
