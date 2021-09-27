@@ -46,6 +46,8 @@ class Prediction(db.Model):
     name = db.Column(db.String(255), nullable=False)
     state = db.Column(db.String(10), nullable=False)
 
+    data = db.relationship('PredictionData', back_populates='prediction')
+
     __table_args__ = (
         UniqueConstraint('name', 'state', name='uq_predictions_name_state'),
     )
@@ -73,6 +75,8 @@ class PredictionData(db.Model):
     prediction_id = db.Column(db.Integer, db.ForeignKey('prediction.id'), nullable=False)
     date = db.Column(db.Date, nullable=False)
     confirmed = db.Column(db.Integer, nullable=False)
+
+    prediction = db.relationship('Prediction', back_populates='data')
 
     __table_args__ = (
         UniqueConstraint('prediction_id', 'date', name='uq_prediction_data_prediction_id_date'),

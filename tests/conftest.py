@@ -32,3 +32,8 @@ def db_extended_cases(database, db_simple_cases):
     db.session.add(Case(date=datetime.date(2021, 9, 4), state='NSW', confirmed=400))
     db.session.add(Case(date=datetime.date(2021, 9, 5), state='NSW', confirmed=500))
     db.session.commit()
+
+@pytest.fixture
+def db_predictions(database):
+    Prediction.save('VIC', datetime.date(2021, 9, 1), [1, 2, 3])
+    Prediction.save('NSW', datetime.date(2021, 9, 1), [10, 20, 30])

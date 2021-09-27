@@ -11,6 +11,10 @@ def test_graph_data(db_simple_cases, index):
     assert index.select('#graph-vic')[0]['data-series'] == '[{"labels": ["2021-09-01", "2021-09-02", "2021-09-03"], "name": "Cases", "values": [10, 20, 30]}]'
     assert index.select('#graph-nsw')[0]['data-series'] == '[{"labels": ["2021-09-01", "2021-09-02", "2021-09-03"], "name": "Cases", "values": [100, 200, 300]}]'
 
+def test_graph_predictions(db_simple_cases, db_predictions, index):
+    assert '{"labels": ["2021-09-01", "2021-09-02", "2021-09-03"], "name": "Prediction 01-09-2021", "values": [1, 2, 3]}' in index.select('#graph-vic')[0]['data-series']
+    assert '{"labels": ["2021-09-01", "2021-09-02", "2021-09-03"], "name": "Prediction 01-09-2021", "values": [10, 20, 30]}' in index.select('#graph-nsw')[0]['data-series']
+
 def test_ordered_by_total_cases(db_simple_cases, index):
     assert list(map(lambda graph: graph['id'], index.select('.graph'))) == ['graph-nsw', 'graph-vic']
 
