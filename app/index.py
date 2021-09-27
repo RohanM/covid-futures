@@ -12,10 +12,11 @@ def index():
     state_data = {}
 
     for state in states:
+        state_data[state] = []
         cases = Case.query.filter(Case.state == state).order_by(Case.date.asc()).all()
         labels = list(map(lambda case: case.date.strftime('%Y-%m-%d'), cases))
         values = list(map(lambda case: case.confirmed, cases))
-        state_data[state] = (labels, values)
+        state_data[state].append({'name': 'Cases', 'labels': labels, 'values': values})
 
     return render_template(
         'index.html',
