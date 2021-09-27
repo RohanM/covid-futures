@@ -30,6 +30,11 @@ class Case(db.Model):
         return db.session.query(func.max(Case.confirmed)).scalar()
 
     @staticmethod
+    def earliest_date(state):
+        """Returns the earliest date we have data for the specified state"""
+        return db.session.query(Case.date).order_by(Case.date.asc()).limit(1).scalar()
+
+    @staticmethod
     def latest_date(state):
         """Returns the most recent date we have data for the specified state"""
         return db.session.query(Case.date).order_by(Case.date.desc()).limit(1).scalar()
@@ -45,6 +50,8 @@ class Prediction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     state = db.Column(db.String(10), nullable=False)
+
+    data = db.relationship('PredictionData', back_populates='prediction')
 
     __table_args__ = (
         UniqueConstraint('name', 'state', name='uq_predictions_name_state'),
@@ -73,6 +80,8 @@ class PredictionData(db.Model):
     prediction_id = db.Column(db.Integer, db.ForeignKey('prediction.id'), nullable=False)
     date = db.Column(db.Date, nullable=False)
     confirmed = db.Column(db.Integer, nullable=False)
+
+    prediction = db.relationship('Prediction', back_populates='data')
 
     __table_args__ = (
         UniqueConstraint('prediction_id', 'date', name='uq_prediction_data_prediction_id_date'),
