@@ -13,23 +13,31 @@ def index():
 
     for state in states:
         state_data[state] = []
-        cases = Case.query.filter(Case.state == state).order_by(Case.date.asc()).all()
-        labels = list(map(lambda case: case.date.strftime('%Y-%m-%d'), cases))
-        values = list(map(lambda case: case.confirmed, cases))
-        state_data[state].append({'name': 'Cases', 'labels': labels, 'values': values})
-
-        predictions = Prediction.query.filter_by(state=state).all()
-        for prediction in predictions:
-            labels = list(map(lambda d: d.date.strftime('%Y-%m-%d'), prediction.data))
-            values = list(map(lambda d: d.confirmed, prediction.data))
-            state_data[state].append({
-                'name': f'Prediction {prediction.name}',
-                'labels': labels,
-                'values': values
-            })
+        state_data[state].append(build_state_cases(state))
+        for prediction in build_state_predictions(state):
+            state_data[state].append(prediction)
 
     return render_template(
         'index.html',
         states=state_data,
         max_confirmed=Case.max_confirmed()
     )
+
+def build_state_cases(state):
+    cases = Case.query.filter(Case.state == state).order_by(Case.date.asc()).all()
+    labels = list(map(lambda case: case.date.strftime('%Y-%m-%d'), cases))
+    values = list(map(lambda case: case.confirmed, cases))
+    return {'name': 'Cases', 'labels': labels, 'values': values}
+
+def build_state_predictions(state):
+    predictions = Prediction.query.filter_by(state=state).all()
+    return [build_prediction(prediction) for prediction in predictions]
+
+def build_prediction(prediction):
+    labels = list(map(lambda d: d.date.strftime('%Y-%m-%d'), prediction.data))
+    values = list(map(lambda d: d.confirmed, prediction.data))
+    return {
+        'name': f'Prediction {prediction.name}',
+        'labels': labels,
+        'values': values
+    }
