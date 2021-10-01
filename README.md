@@ -76,6 +76,13 @@ To create weekly predictions for the whole dataset (mostly to test the model):
 pipenv run predict-weekly
 ```
 
+And to clear all predictions:
+
+```
+pipenv run clear-predictions
+```
+
+
 ## Deployment
 
 The production database URL is configured via the `COVID_FUTURES_DATABASE_URI` environment variable. For
