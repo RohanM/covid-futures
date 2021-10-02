@@ -27,12 +27,12 @@ class MLModelData:
         - self.dataloader_train
         - self.dataloader_valid
         """
-        self.__load_cases()
-        self.__calc_normalised_cases()
-        self.__calc_windowed_cases()
-        self.__split_train_valid()
-        self.__combine_states()
-        self.__init_dataloaders()
+        self.cases = self.__load_cases()
+        self.normalised_cases = self.__calc_normalised_cases(self.cases)
+        self.x, self.y = self.__calc_windowed_cases(self.normalised_cases)
+        self.train_x, self.train_y, self.valid_x, self.valid_y = self.__split_train_valid(self.x, self.y)
+        self.all_train, self.all_valid = self.__combine_states(self.train_x, self.train_y, self.valid_x, self.valid_y)
+        self.dataloader_train, self.dataloader_valid = self.__init_dataloaders(self.all_train, self.all_valid)
 
     @cached_property
     def mean(self):
@@ -46,52 +46,58 @@ class MLModelData:
         return sum(self.cases.values(), [])
 
     def __load_cases(self):
-        self.cases = {}
+        cases = {}
         for state in Case.states():
-            self.cases[state] = Case.confirmed_for_state(state)
+            cases[state] = Case.confirmed_for_state(state)
+        return cases
 
-    def __calc_normalised_cases(self):
-        self.normalised_cases = { k:self.__normalise(v) for k,v in self.cases.items() }
+    def __calc_normalised_cases(self, cases):
+        return { k:self.__normalise(v) for k,v in cases.items() }
 
-    def __calc_windowed_cases(self):
+    def __calc_windowed_cases(self, normalised_cases):
         """Run a window of size (input_window+output_window) over the data, state by state,
         and build training data of the form: history => prediction
         """
         window = self.input_window + self.output_window
-        self.x = {}
-        self.y = {}
+        x = {}
+        y = {}
         for state in Case.states():
-            self.x[state] = []
-            self.y[state] = []
-            state_data = self.normalised_cases[state]
+            x[state] = []
+            y[state] = []
+            state_data = normalised_cases[state]
 
             for i in range(len(state_data) - window + 1):
-                self.x[state].append(state_data[i:i+self.input_window])
-                self.y[state].append(state_data[i+self.input_window:i+window])
+                x[state].append(state_data[i:i+self.input_window])
+                y[state].append(state_data[i+self.input_window:i+window])
+        return x, y
 
-    def __split_train_valid(self):
+    def __split_train_valid(self, x, y):
         """Split data into training and validation sets"""
-        self.train_x = { k:self.__split_one_train_valid(v, True) for k,v in self.x.items() }
-        self.train_y = { k:self.__split_one_train_valid(v, True) for k,v in self.y.items() }
-        self.valid_x = { k:self.__split_one_train_valid(v, False) for k,v in self.x.items() }
-        self.valid_y = { k:self.__split_one_train_valid(v, False) for k,v in self.y.items() }
+        train_x = { k:self.__split_one_train_valid(v, True) for k,v in x.items() }
+        train_y = { k:self.__split_one_train_valid(v, True) for k,v in y.items() }
+        valid_x = { k:self.__split_one_train_valid(v, False) for k,v in x.items() }
+        valid_y = { k:self.__split_one_train_valid(v, False) for k,v in y.items() }
+        return train_x, train_y, valid_x, valid_y
 
-    def __combine_states(self):
+    def __combine_states(self, train_x, train_y, valid_x, valid_y):
         """Combine data from states and present in a Dataset"""
-        self.all_train = Dataset(
-            tensor(sum(self.train_x.values(), [])).float(),
-            tensor(sum(self.train_y.values(), [])).float(),
+        all_train = Dataset(
+            tensor(sum(train_x.values(), [])).float(),
+            tensor(sum(train_y.values(), [])).float(),
         )
-        self.all_valid = Dataset(
-            tensor(sum(self.valid_x.values(), [])).float(),
-            tensor(sum(self.valid_y.values(), [])).float(),
+        all_valid = Dataset(
+            tensor(sum(valid_x.values(), [])).float(),
+            tensor(sum(valid_y.values(), [])).float(),
         )
+        return all_train, all_valid
 
-    def __init_dataloaders(self):
-        if len(self.all_train) > 0:
-            self.dataloader_train = DataLoader(self.all_train, self.batch_size, shuffle=True)
-        if len(self.all_valid) > 0:
-            self.dataloader_valid = DataLoader(self.all_valid, self.batch_size, shuffle=False)
+    def __init_dataloaders(self, all_train, all_valid):
+        dataloader_train, dataloader_valid = None, None
+        if len(all_train) > 0:
+            dataloader_train = DataLoader(all_train, self.batch_size, shuffle=True)
+        if len(all_valid) > 0:
+            dataloader_valid = DataLoader(all_valid, self.batch_size, shuffle=False)
+        return dataloader_train, dataloader_valid
 
     def __normalise(self, values):
         return [(v - self.mean) / self.std for v in values]
