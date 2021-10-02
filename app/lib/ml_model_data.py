@@ -2,18 +2,21 @@ from torch import tensor
 from torch.utils.data import DataLoader
 from functools import cached_property
 from app import db
+from app.lib import running_mean
 from app.lib.dataset import Dataset
 from app.lib.models import Case
 
 class MLModelData:
-    def __init__(self, input_window=30, output_window=30, train_valid_split=0.8, batch_size=64):
+    def __init__(self, running_mean_window=7, input_window=30, output_window=30, train_valid_split=0.8, batch_size=64):
         """
         Parameters:
+        running_mean_window: Size of the window to generate the running mean
         input_window: Number of days of data used as input to the prediction
         output_window: Length of the prediction in days
         train_valid_split: What portion of data to use for training (the remainder is held back for validation)
         batch_size: Size of batch for the DataLoader to provide
         """
+        self.running_mean_window = running_mean_window
         self.input_window = input_window
         self.output_window = output_window
         self.train_valid_split = train_valid_split
@@ -28,7 +31,8 @@ class MLModelData:
         - self.dataloader_valid
         """
         self.cases = self.__load_cases()
-        self.normalised_cases = self.__calc_normalised_cases(self.cases)
+        self.running_mean_cases = self.__calc_running_mean_cases(self.cases)
+        self.normalised_cases = self.__calc_normalised_cases(self.running_mean_cases)
         self.x, self.y = self.__calc_windowed_cases(self.normalised_cases)
         self.train_x, self.train_y, self.valid_x, self.valid_y = self.__split_train_valid(self.x, self.y)
         self.all_train, self.all_valid = self.__combine_states(self.train_x, self.train_y, self.valid_x, self.valid_y)
@@ -50,6 +54,9 @@ class MLModelData:
         for state in Case.states():
             cases[state] = Case.confirmed_for_state(state)
         return cases
+
+    def __calc_running_mean_cases(self, cases):
+        return { k:list(running_mean(v, window=self.running_mean_window)) for k,v in cases.items() }
 
     def __calc_normalised_cases(self, cases):
         return { k:self.__normalise(v) for k,v in cases.items() }

@@ -5,7 +5,7 @@ from app.lib.ml_model_data import MLModelData
 def test_fit(app, db_extended_cases):
     """Integration test of MLModelData with MLModel.fit()"""
     with app.app_context():
-        data = MLModelData(input_window=2, output_window=2, train_valid_split=0.75)
+        data = MLModelData(running_mean_window=2, input_window=2, output_window=2, train_valid_split=0.75)
         data.load()
         model = MLModel(input_window=2, output_window=2, data_mean=data.mean, data_std=data.std)
         train_losses, valid_losses = model.fit(2, data.dataloader_train, data.dataloader_valid)

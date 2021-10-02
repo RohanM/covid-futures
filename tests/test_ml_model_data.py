@@ -4,23 +4,21 @@ from torch.utils.data import DataLoader
 from app.lib.ml_model_data import MLModelData
 
 @pytest.fixture
-def normalised_extended_cases():
-    """Map values in db_extended_cases to normalised values"""
+def normalised_cases():
+    """Map case numbers to normalised values"""
     return {
-        10: pytest.approx(-0.92, abs=0.01),
-        20: pytest.approx(-0.87, abs=0.01),
-        30: pytest.approx(-0.83, abs=0.01),
-        40: pytest.approx(-0.78, abs=0.01),
-        50: pytest.approx(-0.74, abs=0.01),
-        60: pytest.approx(-0.70, abs=0.01),
-        70: pytest.approx(-0.65, abs=0.01),
-        100: pytest.approx(-0.52, abs=0.01),
-        200: pytest.approx(-0.09, abs=0.01),
-        300: pytest.approx(0.35, abs=0.01),
-        400: pytest.approx(0.78, abs=0.01),
-        500: pytest.approx(1.22, abs=0.01),
-        600: pytest.approx(1.66, abs=0.01),
-        700: pytest.approx(2.09, abs=0.01),
+        15: pytest.approx(-0.89, abs=0.01),
+        25: pytest.approx(-0.85, abs=0.01),
+        35: pytest.approx(-0.81, abs=0.01),
+        45: pytest.approx(-0.76, abs=0.01),
+        55: pytest.approx(-0.72, abs=0.01),
+        65: pytest.approx(-0.68, abs=0.01),
+        150: pytest.approx(-0.31, abs=0.01),
+        250: pytest.approx(0.13, abs=0.01),
+        350: pytest.approx(0.57, abs=0.01),
+        450: pytest.approx(1.00, abs=0.01),
+        550: pytest.approx(1.44, abs=0.01),
+        650: pytest.approx(1.87, abs=0.01),
     }
 
 
@@ -36,73 +34,75 @@ def test_data_std(app, db_simple_cases):
         data.load()
         assert data.std == pytest.approx(107, 0.1)
 
-def test_normalised_cases(app, db_extended_cases, normalised_extended_cases):
+def test_running_mean_cases(app, db_extended_cases):
     with app.app_context():
-        data = MLModelData()
+        data = MLModelData(running_mean_window=2)
+        data.load()
+        assert data.running_mean_cases == {
+            'NSW': [150.0, 250.0, 350.0, 450.0, 550.0, 650.0],
+            'VIC': [15.0, 25.0, 35.0, 45.0, 55.0, 65.0],
+        }
+
+def test_normalised_cases(app, db_extended_cases, normalised_cases):
+    with app.app_context():
+        data = MLModelData(running_mean_window=2)
         data.load()
         assert data.normalised_cases == {
             'NSW': [
-                normalised_extended_cases[100],
-                normalised_extended_cases[200],
-                normalised_extended_cases[300],
-                normalised_extended_cases[400],
-                normalised_extended_cases[500],
-                normalised_extended_cases[600],
-                normalised_extended_cases[700],
+                normalised_cases[150],
+                normalised_cases[250],
+                normalised_cases[350],
+                normalised_cases[450],
+                normalised_cases[550],
+                normalised_cases[650],
             ],
             'VIC': [
-                normalised_extended_cases[10],
-                normalised_extended_cases[20],
-                normalised_extended_cases[30],
-                normalised_extended_cases[40],
-                normalised_extended_cases[50],
-                normalised_extended_cases[60],
-                normalised_extended_cases[70],
+                normalised_cases[15],
+                normalised_cases[25],
+                normalised_cases[35],
+                normalised_cases[45],
+                normalised_cases[55],
+                normalised_cases[65],
             ],
         }
 
-def test_windowed_cases(app, db_extended_cases, normalised_extended_cases):
+def test_windowed_cases(app, db_extended_cases, normalised_cases):
     with app.app_context():
-        data = MLModelData(input_window=2, output_window=2)
+        data = MLModelData(running_mean_window=2, input_window=2, output_window=2)
         data.load()
         assert data.x == {
             'NSW': [
-                [normalised_extended_cases[100], normalised_extended_cases[200]],
-                [normalised_extended_cases[200], normalised_extended_cases[300]],
-                [normalised_extended_cases[300], normalised_extended_cases[400]],
-                [normalised_extended_cases[400], normalised_extended_cases[500]],
+                [normalised_cases[150], normalised_cases[250]],
+                [normalised_cases[250], normalised_cases[350]],
+                [normalised_cases[350], normalised_cases[450]],
             ],
             'VIC': [
-                [normalised_extended_cases[10], normalised_extended_cases[20]],
-                [normalised_extended_cases[20], normalised_extended_cases[30]],
-                [normalised_extended_cases[30], normalised_extended_cases[40]],
-                [normalised_extended_cases[40], normalised_extended_cases[50]],
+                [normalised_cases[15], normalised_cases[25]],
+                [normalised_cases[25], normalised_cases[35]],
+                [normalised_cases[35], normalised_cases[45]],
             ],
         }
         assert data.y == {
             'NSW': [
-                [normalised_extended_cases[300], normalised_extended_cases[400]],
-                [normalised_extended_cases[400], normalised_extended_cases[500]],
-                [normalised_extended_cases[500], normalised_extended_cases[600]],
-                [normalised_extended_cases[600], normalised_extended_cases[700]],
+                [normalised_cases[350], normalised_cases[450]],
+                [normalised_cases[450], normalised_cases[550]],
+                [normalised_cases[550], normalised_cases[650]],
             ],
             'VIC': [
-                [normalised_extended_cases[30], normalised_extended_cases[40]],
-                [normalised_extended_cases[40], normalised_extended_cases[50]],
-                [normalised_extended_cases[50], normalised_extended_cases[60]],
-                [normalised_extended_cases[60], normalised_extended_cases[70]],
+                [normalised_cases[35], normalised_cases[45]],
+                [normalised_cases[45], normalised_cases[55]],
+                [normalised_cases[55], normalised_cases[65]],
             ]
         }
 
 def test_split_train_validation(app, db_extended_cases):
     with app.app_context():
-        data = MLModelData(input_window=1, output_window=1, train_valid_split=0.7)
+        data = MLModelData(running_mean_window=2, input_window=1, output_window=1, train_valid_split=0.6)
         data.load()
-        print(data.x)
-        assert len(data.train_x['NSW']) == 4
-        assert len(data.train_x['VIC']) == 4
-        assert len(data.train_y['NSW']) == 4
-        assert len(data.train_y['VIC']) == 4
+        assert len(data.train_x['NSW']) == 3
+        assert len(data.train_x['VIC']) == 3
+        assert len(data.train_y['NSW']) == 3
+        assert len(data.train_y['VIC']) == 3
         assert len(data.valid_x['NSW']) == 2
         assert len(data.valid_x['VIC']) == 2
         assert len(data.valid_y['NSW']) == 2
@@ -110,16 +110,16 @@ def test_split_train_validation(app, db_extended_cases):
 
 def test_combine_data(app, db_extended_cases):
     with app.app_context():
-        data = MLModelData(input_window=1, output_window=1, train_valid_split=0.7)
+        data = MLModelData(running_mean_window=2, input_window=1, output_window=1, train_valid_split=0.6)
         data.load()
-        assert len(data.all_train.x) == 8
-        assert len(data.all_train.y) == 8
+        assert len(data.all_train.x) == 6
+        assert len(data.all_train.y) == 6
         assert len(data.all_valid.x) == 4
         assert len(data.all_valid.y) == 4
 
 def test_dataloader(app, db_extended_cases):
     with app.app_context():
-        data = MLModelData(input_window=1, output_window=1, train_valid_split=0.75)
+        data = MLModelData(running_mean_window=2, input_window=1, output_window=1, train_valid_split=0.6)
         data.load()
         assert type(data.dataloader_train) == DataLoader
         assert type(data.dataloader_valid) == DataLoader
