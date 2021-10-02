@@ -31,9 +31,29 @@ class MLModel:
         # Actual learning rate will be defined by the scheduler when fitting
         self.__opt = optim.SGD(self.__model.parameters(), lr=0.01)
 
+    def find_lr(self, dataloader):
+        start_lr = 1e-7
+        lrs, losses = [], []
+        loss_func = nn.MSELoss()
+
+        self.__opt.param_groups[0]['lr'] = start_lr
+
+        self.__model.train()
+        i = 0
+        while self.__opt.param_groups[0]['lr'] < 10:
+            loss = self.__train(dataloader, loss_func)
+            lrs.append(self.__opt.param_groups[0]['lr'])
+            losses.append(loss)
+            if i % 10 == 0:
+                self.__opt.param_groups[0]['lr'] *= 1.2
+                print(self.__opt.param_groups[0]['lr'])
+            i += 1
+
+        return lrs, losses
+
     def fit(self, epochs, dataloader_train, dataloader_valid):
         train_losses, valid_losses = [], []
-        scheduler = OneCycleLR(self.__opt, 0.01, total_steps=epochs, steps_per_epoch=1)
+        scheduler = OneCycleLR(self.__opt, 0.003, total_steps=epochs, steps_per_epoch=1)
         loss_func = nn.MSELoss()
 
         for epoch in range(epochs):
