@@ -29,8 +29,12 @@ def db_simple_cases(database):
 def db_extended_cases(database, db_simple_cases):
     db.session.add(Case(date=datetime.date(2021, 9, 4), state='VIC', confirmed=40))
     db.session.add(Case(date=datetime.date(2021, 9, 5), state='VIC', confirmed=50))
+    db.session.add(Case(date=datetime.date(2021, 9, 6), state='VIC', confirmed=60))
+    db.session.add(Case(date=datetime.date(2021, 9, 7), state='VIC', confirmed=70))
     db.session.add(Case(date=datetime.date(2021, 9, 4), state='NSW', confirmed=400))
     db.session.add(Case(date=datetime.date(2021, 9, 5), state='NSW', confirmed=500))
+    db.session.add(Case(date=datetime.date(2021, 9, 6), state='NSW', confirmed=600))
+    db.session.add(Case(date=datetime.date(2021, 9, 7), state='NSW', confirmed=700))
     db.session.commit()
 
 @pytest.fixture

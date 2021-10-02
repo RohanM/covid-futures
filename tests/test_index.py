@@ -7,9 +7,9 @@ def index(client):
     return BeautifulSoup(rv.data, 'html.parser')
 
 
-def test_graph_data(db_simple_cases, index):
-    assert index.select('#graph-vic')[0]['data-series'] == '[{"labels": ["2021-09-01", "2021-09-02", "2021-09-03"], "name": "Cases", "values": [10, 20, 30]}]'
-    assert index.select('#graph-nsw')[0]['data-series'] == '[{"labels": ["2021-09-01", "2021-09-02", "2021-09-03"], "name": "Cases", "values": [100, 200, 300]}]'
+def test_graph_data(db_extended_cases, index):
+    assert index.select('#graph-vic')[0]['data-series'] == '[{"labels": ["2021-09-07"], "name": "Cases", "values": [39.99999999999999]}]'
+    assert index.select('#graph-nsw')[0]['data-series'] == '[{"labels": ["2021-09-07"], "name": "Cases", "values": [400.0]}]'
 
 def test_graph_predictions(db_simple_cases, db_predictions, index):
     assert '{"labels": ["2021-09-01", "2021-09-02", "2021-09-03"], "name": "Prediction 01-09-2021", "values": [1, 2, 3]}' in index.select('#graph-vic')[0]['data-series']
