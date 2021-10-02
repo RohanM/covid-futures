@@ -2,6 +2,7 @@ import json
 from flask import Blueprint
 from flask import render_template
 
+from app.lib import running_mean
 from app.lib.models import Case, Prediction, PredictionData
 
 bp = Blueprint('index', __name__)
@@ -25,8 +26,8 @@ def index():
 
 def build_state_cases(state):
     cases = Case.query.filter(Case.state == state).order_by(Case.date.asc()).all()
-    labels = list(map(lambda case: case.date.strftime('%Y-%m-%d'), cases))
-    values = list(map(lambda case: case.confirmed, cases))
+    labels = list(map(lambda case: case.date.strftime('%Y-%m-%d'), cases))[6:]
+    values = list(running_mean(list(map(lambda case: case.confirmed, cases))))
     return {'name': 'Cases', 'labels': labels, 'values': values}
 
 def build_state_predictions(state):
