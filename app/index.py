@@ -26,7 +26,7 @@ def index():
 
 def build_state_cases(state):
     cases = Case.query.filter(Case.state == state).order_by(Case.date.asc()).all()
-    labels = list(map(lambda case: case.date.strftime('%Y-%m-%d'), cases))[6:]
+    labels = list(map(lambda case: case.date.strftime('%Y-%m-%d'), cases))[:-6]
     values = list(running_mean(list(map(lambda case: case.confirmed, cases))))
     return {'name': 'Cases', 'labels': labels, 'values': values}
 
