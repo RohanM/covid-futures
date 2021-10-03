@@ -20,7 +20,11 @@ class MLModel:
 
         self.__model = nn.Sequential(
             Lambda(add_channel),
-            nn.Conv1d(          1, num_filters, 7,  padding=3), nn.ReLU(),
+            nn.Conv1d(          1, num_filters, 15, padding=7), nn.ReLU(),
+            nn.Conv1d(num_filters, num_filters, 13, padding=6), nn.ReLU(),
+            nn.Conv1d(num_filters, num_filters, 11, padding=5), nn.ReLU(),
+            nn.Conv1d(num_filters, num_filters, 9,  padding=4), nn.ReLU(),
+            nn.Conv1d(num_filters, num_filters, 7,  padding=3), nn.ReLU(),
             nn.Conv1d(num_filters, num_filters, 5,  padding=2), nn.ReLU(),
             nn.Conv1d(num_filters, num_filters, 3,  padding=1), nn.ReLU(),
             nn.Conv1d(num_filters, num_filters, 3,  padding=1), nn.ReLU(),
@@ -31,8 +35,7 @@ class MLModel:
         # Actual learning rate will be defined by the scheduler when fitting
         self.__opt = optim.SGD(self.__model.parameters(), lr=0.01)
 
-    def find_lr(self, dataloader):
-        start_lr = 1e-7
+    def find_lr(self, dataloader, start_lr=1e-7, epochs_per_step=10):
         lrs, losses = [], []
         loss_func = nn.MSELoss()
 
@@ -44,7 +47,7 @@ class MLModel:
             loss = self.__train(dataloader, loss_func)
             lrs.append(self.__opt.param_groups[0]['lr'])
             losses.append(loss)
-            if i % 10 == 0:
+            if i % epochs_per_step == 0:
                 self.__opt.param_groups[0]['lr'] *= 1.2
                 print(self.__opt.param_groups[0]['lr'])
             i += 1
@@ -53,7 +56,7 @@ class MLModel:
 
     def fit(self, epochs, dataloader_train, dataloader_valid):
         train_losses, valid_losses = [], []
-        scheduler = OneCycleLR(self.__opt, 0.003, total_steps=epochs, steps_per_epoch=1)
+        scheduler = OneCycleLR(self.__opt, 0.028, total_steps=epochs, steps_per_epoch=1)
         loss_func = nn.MSELoss()
 
         for epoch in range(epochs):
