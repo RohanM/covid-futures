@@ -24,6 +24,7 @@ pytest-flask = "*"
 bs4 = "*"
 jupyter = "*"
 matplotlib = "*"
+pytest-watcher = "*"
 
 [requires]
 python_version = "3.8"
@@ -31,7 +32,7 @@ python_version = "3.8"
 [scripts]
 server = "bash -c 'FLASK_APP=app FLASK_ENV=development flask run'"
 test = "pytest"
-test-watch = "ptw"
+test-watch = "ptw ."
 load-schema = "./bin/load_schema.py"
 ingest-data = "./bin/ingest_data.py"
 train-model = "./bin/train_model.py"
