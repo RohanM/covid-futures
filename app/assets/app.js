@@ -20,6 +20,8 @@ window.onload = () => {
       ];
     }).flat();
 
+    const showLegend = series.length < 5;
+
     var chart = bb.generate({
       bindto: `#graph-${state}`,
       data: {
@@ -42,6 +44,9 @@ window.onload = () => {
           max: maxY,
         },
       },
+      legend: {
+        show: showLegend,
+      }
     });
   });
 };
