@@ -21,7 +21,6 @@ torchvision = "*"
 [dev-packages]
 pytest = "*"
 pytest-flask = "*"
-pytest-watch = "*"
 bs4 = "*"
 jupyter = "*"
 matplotlib = "*"
