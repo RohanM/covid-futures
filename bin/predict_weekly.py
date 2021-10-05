@@ -16,7 +16,9 @@ with create_app().app_context():
     model.load('./model.pt')
 
     for state in Case.states():
-        first_date = Case.earliest_date(state) + datetime.timedelta(days=30)
+        # We start a month in (to provide enough data for our input window)
+        # plus an extra week because the first 6 days are consumed by our running mean.
+        first_date = Case.earliest_date(state) + datetime.timedelta(days=input_window) + datetime.timedelta(days=7)
         num_days = (Case.latest_date(state) - first_date).days
 
         for day in range(0, num_days, 7):
