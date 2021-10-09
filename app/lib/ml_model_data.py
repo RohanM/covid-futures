@@ -89,12 +89,12 @@ class MLModelData:
     def __combine_states(self, train_x, train_y, valid_x, valid_y):
         """Combine data from states and present in a Dataset"""
         all_train = Dataset(
-            tensor(sum(train_x.values(), [])).float(),
-            tensor(sum(train_y.values(), [])).float(),
+            sum(train_x.values(), []),
+            sum(train_y.values(), []),
         )
         all_valid = Dataset(
-            tensor(sum(valid_x.values(), [])).float(),
-            tensor(sum(valid_y.values(), [])).float(),
+            sum(valid_x.values(), []),
+            sum(valid_y.values(), []),
         )
         return all_train, all_valid
 
