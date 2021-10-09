@@ -8,30 +8,30 @@ from app.lib.ml_model_data import MLModelData
 def normalised_cases():
     """Map case numbers to normalised values"""
     return {
-        15: pytest.approx(-0.89, abs=0.01),
-        25: pytest.approx(-0.85, abs=0.01),
-        35: pytest.approx(-0.81, abs=0.01),
-        45: pytest.approx(-0.76, abs=0.01),
-        55: pytest.approx(-0.72, abs=0.01),
-        65: pytest.approx(-0.68, abs=0.01),
-        150: pytest.approx(-0.31, abs=0.01),
-        250: pytest.approx(0.13, abs=0.01),
-        350: pytest.approx(0.57, abs=0.01),
-        450: pytest.approx(1.00, abs=0.01),
-        550: pytest.approx(1.44, abs=0.01),
-        650: pytest.approx(1.87, abs=0.01),
+        15: pytest.approx(-0.94, abs=0.01),
+        25: pytest.approx(-0.90, abs=0.01),
+        35: pytest.approx(-0.85, abs=0.01),
+        45: pytest.approx(-0.81, abs=0.01),
+        55: pytest.approx(-0.76, abs=0.01),
+        65: pytest.approx(-0.71, abs=0.01),
+        150: pytest.approx(-0.32, abs=0.01),
+        250: pytest.approx(0.14, abs=0.01),
+        350: pytest.approx(0.60, abs=0.01),
+        450: pytest.approx(1.06, abs=0.01),
+        550: pytest.approx(1.52, abs=0.01),
+        650: pytest.approx(1.98, abs=0.01),
     }
 
 
 def test_data_mean(app, db_simple_cases):
     with app.app_context():
-        data = MLModelData()
+        data = MLModelData(running_mean_window=1)
         data.load()
         assert data.mean == 110
 
 def test_data_std(app, db_simple_cases):
     with app.app_context():
-        data = MLModelData()
+        data = MLModelData(running_mean_window=1)
         data.load()
         assert data.std == pytest.approx(107, 0.1)
 

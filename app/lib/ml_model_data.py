@@ -5,6 +5,8 @@ from app import db
 from app.lib import running_mean
 from app.lib.dataset import Dataset
 from app.lib.models import Case
+from app.lib.data_pipeline import LoadCases, RunningMean, Normalise, Window, SplitTrainValid, FlattenStates, BuildDatasets, BuildDataloaders, Stats
+
 
 class MLModelData:
     def __init__(self, running_mean_window=7, input_window=30, output_window=30, train_valid_split=0.8, batch_size=64):
@@ -16,11 +18,27 @@ class MLModelData:
         train_valid_split: What portion of data to use for training (the remainder is held back for validation)
         batch_size: Size of batch for the DataLoader to provide
         """
-        self.running_mean_window = running_mean_window
-        self.input_window = input_window
-        self.output_window = output_window
-        self.train_valid_split = train_valid_split
-        self.batch_size = batch_size
+        self.stats_pipeline = [
+            LoadCases(),
+            RunningMean(window=running_mean_window),
+            Stats(),
+        ]
+        self.pipeline = [
+            LoadCases(),
+            RunningMean(window=running_mean_window),
+            Normalise(),
+            Window(input_window=input_window, output_window=output_window),
+            SplitTrainValid(split=train_valid_split),
+            FlattenStates(),
+            BuildDatasets({
+                'train': ('train_x', 'train_y'),
+                'valid': ('valid_x', 'valid_y'),
+            }),
+            BuildDataloaders({
+                'train': { 'batch_size': batch_size, 'shuffle': True },
+                'valid': { 'batch_size': batch_size, 'shuffle': False },
+            }),
+        ]
 
     def load(self):
         """
@@ -30,85 +48,12 @@ class MLModelData:
         - self.dataloader_train
         - self.dataloader_valid
         """
-        self.cases = self.__load_cases()
-        self.running_mean_cases = self.__calc_running_mean_cases(self.cases)
-        self.normalised_cases = self.__calc_normalised_cases(self.running_mean_cases)
-        self.x, self.y = self.__calc_windowed_cases(self.normalised_cases)
-        self.train_x, self.train_y, self.valid_x, self.valid_y = self.__split_train_valid(self.x, self.y)
-        self.all_train, self.all_valid = self.__combine_states(self.train_x, self.train_y, self.valid_x, self.valid_y)
-        self.dataloader_train, self.dataloader_valid = self.__init_dataloaders(self.all_train, self.all_valid)
+        data = []
+        for step in self.pipeline:
+            data = step.perform(data)
+        self.dataloader_train, self.dataloader_valid = data['train'], data['valid']
 
-    @cached_property
-    def mean(self):
-        return tensor(self.__all_cases()).float().mean().item()
-
-    @cached_property
-    def std(self):
-        return tensor(self.__all_cases()).float().std(unbiased=False).item()
-
-    def __all_cases(self):
-        return sum(self.cases.values(), [])
-
-    def __load_cases(self):
-        cases = {}
-        for state in Case.states():
-            cases[state] = Case.confirmed_for_state(state)
-        return cases
-
-    def __calc_running_mean_cases(self, cases):
-        return { k:list(running_mean(v, window=self.running_mean_window)) for k,v in cases.items() }
-
-    def __calc_normalised_cases(self, cases):
-        return { k:self.__normalise(v) for k,v in cases.items() }
-
-    def __calc_windowed_cases(self, normalised_cases):
-        """Run a window of size (input_window+output_window) over the data, state by state,
-        and build training data of the form: history => prediction
-        """
-        window = self.input_window + self.output_window
-        x = {}
-        y = {}
-        for state in Case.states():
-            x[state] = []
-            y[state] = []
-            state_data = normalised_cases[state]
-
-            for i in range(len(state_data) - window + 1):
-                x[state].append(state_data[i:i+self.input_window])
-                y[state].append(state_data[i+self.input_window:i+window])
-        return x, y
-
-    def __split_train_valid(self, x, y):
-        """Split data into training and validation sets"""
-        train_x = { k:self.__split_one_train_valid(v, True) for k,v in x.items() }
-        train_y = { k:self.__split_one_train_valid(v, True) for k,v in y.items() }
-        valid_x = { k:self.__split_one_train_valid(v, False) for k,v in x.items() }
-        valid_y = { k:self.__split_one_train_valid(v, False) for k,v in y.items() }
-        return train_x, train_y, valid_x, valid_y
-
-    def __combine_states(self, train_x, train_y, valid_x, valid_y):
-        """Combine data from states and present in a Dataset"""
-        all_train = Dataset(
-            sum(train_x.values(), []),
-            sum(train_y.values(), []),
-        )
-        all_valid = Dataset(
-            sum(valid_x.values(), []),
-            sum(valid_y.values(), []),
-        )
-        return all_train, all_valid
-
-    def __init_dataloaders(self, all_train, all_valid):
-        dataloader_train, dataloader_valid = None, None
-        if len(all_train) > 0:
-            dataloader_train = DataLoader(all_train, self.batch_size, shuffle=True)
-        if len(all_valid) > 0:
-            dataloader_valid = DataLoader(all_valid, self.batch_size, shuffle=False)
-        return dataloader_train, dataloader_valid
-
-    def __normalise(self, values):
-        return [(v - self.mean) / self.std for v in values]
-
-    def __split_one_train_valid(self, values, is_training):
-        train_len = int(len(values) * self.train_valid_split)
-        return values[:train_len] if is_training else values[train_len:]
+        stats = {}
+        for step in self.stats_pipeline:
+            stats = step.perform(stats)
+        self.mean, self.std = stats['mean'], stats['std']
