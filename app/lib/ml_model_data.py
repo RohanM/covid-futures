@@ -18,14 +18,14 @@ class MLModelData:
         train_valid_split: What portion of data to use for training (the remainder is held back for validation)
         batch_size: Size of batch for the DataLoader to provide
         """
-        self.stats_pipeline = [
+        self.data_pipeline = [
             LoadCases(),
             RunningMean(window=running_mean_window),
+        ]
+        self.stats_pipeline = self.data_pipeline + [
             Stats(),
         ]
-        self.pipeline = [
-            LoadCases(),
-            RunningMean(window=running_mean_window),
+        self.training_pipeline = self.data_pipeline + [
             Normalise(),
             Window(input_window=input_window, output_window=output_window),
             SplitTrainValid(split=train_valid_split),
@@ -48,10 +48,14 @@ class MLModelData:
         - self.dataloader_train
         - self.dataloader_valid
         """
-        data = []
-        for step in self.pipeline:
-            data = step.perform(data)
-        self.dataloader_train, self.dataloader_valid = data['train'], data['valid']
+        self.data = []
+        for step in self.data_pipeline:
+            self.data = step.perform(self.data)
+
+        training_data = []
+        for step in self.training_pipeline:
+            training_data = step.perform(training_data)
+        self.dataloader_train, self.dataloader_valid = training_data['train'], training_data['valid']
 
         stats = {}
         for step in self.stats_pipeline:

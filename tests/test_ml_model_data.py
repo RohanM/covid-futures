@@ -35,6 +35,15 @@ def test_data_std(app, db_simple_cases):
         data.load()
         assert data.std == pytest.approx(107, 0.1)
 
+def test_data(app, db_simple_cases):
+    with app.app_context():
+        data = MLModelData(running_mean_window=1)
+        data.load()
+        assert data.data == {
+            'NSW': [100.0, 200.0, 300.0],
+            'VIC': [10.0, 20.0, 30.0],
+        }
+
 def test_dataloaders(app, db_extended_cases):
     with app.app_context():
         data = MLModelData(running_mean_window=2, input_window=1, output_window=1, train_valid_split=0.6)
