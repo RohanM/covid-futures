@@ -27,7 +27,7 @@ class MLModelData:
         ]
         self.training_pipeline = self.data_pipeline + [
             Normalise(),
-            Window(input_window=input_window, output_window=output_window),
+            Window(input_window=input_window, output_window=output_window, relative=True),
             SplitTrainValid(split=train_valid_split),
             FlattenStates(),
             BuildDatasets({
