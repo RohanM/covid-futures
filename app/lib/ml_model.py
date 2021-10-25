@@ -73,7 +73,8 @@ class MLModel:
 
     def predict(self, x):
         """Given a list of history data, performs inference and returns predictions"""
-        return self.__model(tensor([x]).float()).squeeze() * self.data_std + self.data_mean
+        normalised_x = (tensor([x]).float() - self.data_mean) / self.data_std
+        return self.__model(normalised_x).squeeze() * self.data_std + self.data_mean
 
     def save(self, path):
         checkpoint = {

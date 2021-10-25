@@ -23,6 +23,6 @@ with create_app().app_context():
 
         for day in range(0, num_days, 7):
             prediction_date = first_date + datetime.timedelta(days=day)
-            cases = data.normalised_cases[state][day:day+input_window]
+            cases = data.data[state][day:day+input_window]
             prediction_data = model.predict(cases).int().tolist()
             Prediction.save(state, prediction_date, prediction_data)
