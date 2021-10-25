@@ -8,12 +8,17 @@ from app.lib.ml_model_data import MLModelData
 def normalised_cases():
     """Map case numbers to normalised values"""
     return {
+        10: pytest.approx(0.04, abs=0.01),
+
         15: pytest.approx(-0.94, abs=0.01),
         25: pytest.approx(-0.90, abs=0.01),
         35: pytest.approx(-0.85, abs=0.01),
         45: pytest.approx(-0.81, abs=0.01),
         55: pytest.approx(-0.76, abs=0.01),
         65: pytest.approx(-0.71, abs=0.01),
+
+        100: pytest.approx(0.46, abs=0.01),
+
         150: pytest.approx(-0.32, abs=0.01),
         250: pytest.approx(0.14, abs=0.01),
         350: pytest.approx(0.60, abs=0.01),
@@ -64,12 +69,12 @@ def test_dataloader_data(app, db_extended_cases, normalised_cases):
             [normalised_cases[35]],
         ]
         assert data.dataloader_train.dataset.y.tolist() == [
-            [normalised_cases[250]],
-            [normalised_cases[350]],
-            [normalised_cases[450]],
-            [normalised_cases[25]],
-            [normalised_cases[35]],
-            [normalised_cases[45]],
+            [normalised_cases[250 - 150]],
+            [normalised_cases[350 - 250]],
+            [normalised_cases[450 - 350]],
+            [normalised_cases[25 - 15]],
+            [normalised_cases[35 - 25]],
+            [normalised_cases[45 - 35]],
         ]
         assert data.dataloader_valid.dataset.x.tolist() == [
             [normalised_cases[450]],
@@ -78,8 +83,8 @@ def test_dataloader_data(app, db_extended_cases, normalised_cases):
             [normalised_cases[55]],
         ]
         assert data.dataloader_valid.dataset.y.tolist() == [
-            [normalised_cases[550]],
-            [normalised_cases[650]],
-            [normalised_cases[55]],
-            [normalised_cases[65]],
+            [normalised_cases[550 - 450]],
+            [normalised_cases[650 - 550]],
+            [normalised_cases[55 - 45]],
+            [normalised_cases[65 - 55]],
         ]
