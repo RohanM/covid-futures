@@ -21,7 +21,7 @@ with create_app().app_context():
         first_date = Case.earliest_date(state) + datetime.timedelta(days=input_window) + datetime.timedelta(days=7)
         num_days = (Case.latest_date(state) - first_date).days
 
-        for day in range(0, num_days, 7):
+        for day in range(0, num_days+7, 7):
             prediction_date = first_date + datetime.timedelta(days=day)
             cases = data.data[state][day:day+input_window]
             prediction_data = model.predict(cases).int().tolist()
