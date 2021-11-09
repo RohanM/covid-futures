@@ -58,7 +58,7 @@ class Prediction(db.Model):
     )
 
     @staticmethod
-    def save(state, date, data):
+    def save_sequence(state, date, data):
         name = date.strftime('%d-%m-%Y')
         prediction = Prediction(name=name, state=state)
         db.session.add(prediction)

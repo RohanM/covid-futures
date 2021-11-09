@@ -39,5 +39,5 @@ def db_extended_cases(database, db_simple_cases):
 
 @pytest.fixture
 def db_predictions(database):
-    Prediction.save('VIC', datetime.date(2021, 9, 1), [1, 2, 3])
-    Prediction.save('NSW', datetime.date(2021, 9, 1), [10, 20, 30])
+    Prediction.save_sequence('VIC', datetime.date(2021, 9, 1), [1, 2, 3])
+    Prediction.save_sequence('NSW', datetime.date(2021, 9, 1), [10, 20, 30])
