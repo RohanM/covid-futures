@@ -59,17 +59,32 @@ class Prediction(db.Model):
 
     @staticmethod
     def save_sequence(state, date, data):
+        """
+        Save a prediction for a sequence of days, starting at `date`
+        """
         name = date.strftime('%d-%m-%Y')
+        data_xy = [(date + datetime.timedelta(days=i), data[i]) for i in range(len(data))]
+        Prediction.save_scatter(name, state, data_xy)
+
+    @staticmethod
+    def save_scatter(name, state, data):
+        """
+        Save a prediction
+        Params:
+        - name: Prediction name
+        - state: Prediction state (eg. VIC)
+        - data: Data in the format [(date, value), ...]
+        """
         prediction = Prediction(name=name, state=state)
         db.session.add(prediction)
         db.session.commit()
 
-        for i in range(len(data)):
+        for item in data:
             db.session.add(
                 PredictionData(
                     prediction_id=prediction.id,
-                    date=date + datetime.timedelta(days=i),
-                    confirmed=data[i],
+                    date=item[0],
+                    confirmed=item[1],
                 )
             )
         db.session.commit()

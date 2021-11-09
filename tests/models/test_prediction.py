@@ -17,3 +17,22 @@ def test_save_sequence(app, database):
             (datetime.date(2021, 9, 27), 2),
             (datetime.date(2021, 9, 28), 3),
         ]
+
+def test_save_scatter(app, database):
+    with app.app_context():
+        state = 'VIC'
+        start_date = datetime.date(2021, 9, 26)
+        data = [
+            (datetime.date(2021, 9, 26), 1),
+            (datetime.date(2021, 9, 28), 2),
+            (datetime.date(2021, 9, 30), 3),
+        ]
+        Prediction.save_scatter('Scatter', state, data)
+
+        prediction = Prediction.query.filter_by(name='Scatter', state=state).first()
+        data = PredictionData.query.filter_by(prediction_id=prediction.id).order_by(PredictionData.date).all()
+        assert [(p.date, p.confirmed) for p in data] == [
+            (datetime.date(2021, 9, 26), 1),
+            (datetime.date(2021, 9, 28), 2),
+            (datetime.date(2021, 9, 30), 3),
+        ]
