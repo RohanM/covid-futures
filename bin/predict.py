@@ -19,4 +19,4 @@ with create_app().app_context():
         prediction_date = Case.latest_date(state) + datetime.timedelta(days=1)
         recent_cases = data.data[state][-input_window:]
         prediction_data = model.predict(recent_cases).int().tolist()
-        Prediction.save(state, prediction_date, prediction_data)
+        Prediction.save_sequence(state, prediction_date, prediction_data)

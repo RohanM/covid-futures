@@ -76,12 +76,17 @@ To create weekly predictions for the whole dataset (mostly to test the model):
 pipenv run predict-weekly
 ```
 
+To load predictions from a CSV file:
+
+```
+pipenv run load-csv <prediction name> <state> <csv file>
+```
+
 And to clear all predictions:
 
 ```
 pipenv run clear-predictions
 ```
-
 
 ## Deployment
 
