@@ -19,7 +19,7 @@ window.onload = () => {
       ];
     }).flat();
 
-    const showLegend = series.length < 5;
+    const showLegend = series.length <= 8;
 
     var chart = bb.generate({
       bindto: `#graph-${state}`,
