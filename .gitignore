@@ -1,4 +1,4 @@
-app/static/app.js*
+src/app/static/app.js*
 
 .ipynb_checkpoints/
 
