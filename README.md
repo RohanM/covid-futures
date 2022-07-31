@@ -28,6 +28,15 @@ npm run webpack:prod
 
 Configure the database (for development and testing):
 
+
+```sql
+create user covid_futures@localhost identified by 'covid_futures';
+create database covid_futures_test;
+create database covid_futures_dev;
+grant all privileges on covid_futures_test.* to covid_futures@localhost;
+grant all privileges on covid_futures_dev.* to covid_futures@localhost;
+```
+
 ```
 echo "export COVID_FUTURES_DATABASE_URI_TEST='mysql+pymysql://covid_futures:covid_futures@localhost/covid_futures_test'" >> .env
 echo "export COVID_FUTURES_DATABASE_URI='mysql+pymysql://covid_futures:covid_futures@localhost/covid_futures_dev'" >> .env
