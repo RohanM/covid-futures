@@ -5,7 +5,7 @@ from app import db
 from app.lib import running_mean
 from app.lib.dataset import Dataset
 from app.lib.models import Case
-from app.lib.data_pipeline import LoadCases, RunningMean, Normalise, Window, SplitTrainValid, FlattenStates, BuildDatasets, BuildDataloaders, Stats
+from app.lib.data_pipeline import LoadCases, RunningMean, SaveToPT, LoadFromPT, Normalise, Window, SplitTrainValid, FlattenStates, BuildDatasets, BuildDataloaders, Stats
 
 
 class MLModelData:
@@ -19,7 +19,9 @@ class MLModelData:
         batch_size: Size of batch for the DataLoader to provide
         """
         self.data_pipeline = [
-            LoadCases(),
+            #LoadCases(),
+            #SaveToPT(),
+            LoadFromPT(),
             RunningMean(window=running_mean_window),
         ]
         self.stats_pipeline = self.data_pipeline + [
