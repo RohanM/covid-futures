@@ -1,8 +1,11 @@
 import torch
 from torch import tensor
+from app.lib import get_device
 
 class Dataset():
-    def __init__(self, x, y): self.x,self.y = tensor(x).float(),tensor(y).float()
+    def __init__(self, x, y):
+        self.x = tensor(x).float().to(get_device())
+        self.y = tensor(y).float().to(get_device())
     def __len__(self): return len(self.x)
     def __getitem__(self, i): return self.x[i], self.y[i]
     def __eq__(self, other):

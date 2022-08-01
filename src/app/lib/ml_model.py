@@ -1,5 +1,6 @@
 import torch
 from torch import nn, optim, tensor
+from app.lib import get_device
 from app.lib.lambda_layer import Lambda
 from torch.optim.lr_scheduler import OneCycleLR
 
@@ -32,6 +33,8 @@ class MLModel:
             Lambda(flatten),
             nn.Linear(input_window*num_filters, output_window),
         )
+        self.__model.to(get_device())
+
         # Actual learning rate will be defined by the scheduler when fitting
         self.__opt = optim.SGD(self.__model.parameters(), lr=0.01)
 
