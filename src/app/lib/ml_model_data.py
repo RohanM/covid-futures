@@ -22,7 +22,6 @@ class MLModelData:
             #LoadCases(),
             #SaveToPT(),
             LoadFromPT(),
-            RunningMean(window=running_mean_window),
         ]
         self.stats_pipeline = self.data_pipeline + [
             Stats(),
