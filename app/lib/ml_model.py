@@ -24,7 +24,7 @@ class MLModel:
 
             Lambda(flatten),
             nn.Linear(input_window*num_filters, output_window),
-        )
+        ).cuda()
         # Actual learning rate will be defined by the scheduler when fitting
         self.__opt = optim.SGD(self.__model.parameters(), lr=0.01)
 

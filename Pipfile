@@ -25,6 +25,7 @@ pytest-watch = "*"
 bs4 = "*"
 jupyter = "*"
 matplotlib = "*"
+ipykernel = "*"
 
 [requires]
 python_version = "3.8"
