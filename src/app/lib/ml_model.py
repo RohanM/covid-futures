@@ -4,6 +4,25 @@ from app.lib import get_device
 from app.lib.lambda_layer import Lambda
 from torch.optim.lr_scheduler import OneCycleLR
 
+class ResBlock(nn.Module):
+    def __init__(self, num_channels, kernel_size, first=False):
+        super().__init__()
+        self.conv1 = nn.Conv1d(1 if first else num_channels, num_channels, kernel_size, padding=kernel_size//2)
+        self.relu = nn.ReLU()
+
+        kern2 = kernel_size if kernel_size <= 3 else kernel_size-2
+        pad2 = 1 if kern2 <= 3 else (kern2 // 2)
+        self.conv2 = nn.Conv1d(num_channels, num_channels, kern2, padding=pad2)
+        print(f"nn.Conv1d({1 if first else num_channels}, {num_channels}, {kernel_size}, padding={kernel_size//2})")
+        print(f"nn.Conv1d({num_channels}, {num_channels}, {kern2}, padding={pad2})")
+
+    def forward(self, x):
+        out = self.conv1(x)
+        out = self.relu(out)
+        out = self.conv2(out)
+        out = self.relu(out)
+        return out
+
 class MLModel:
     def __init__(self, input_window=30, output_window=30, data_mean=0, data_std=1):
         """
@@ -22,14 +41,11 @@ class MLModel:
 
         self.__model = nn.Sequential(
             Lambda(add_channel),
-            nn.Conv1d(          1, num_filters, 15, padding=7), nn.ReLU(),
-            nn.Conv1d(num_filters, num_filters, 13, padding=6), nn.ReLU(),
-            nn.Conv1d(num_filters, num_filters, 11, padding=5), nn.ReLU(),
-            nn.Conv1d(num_filters, num_filters, 9,  padding=4), nn.ReLU(),
-            nn.Conv1d(num_filters, num_filters, 7,  padding=3), nn.ReLU(),
-            nn.Conv1d(num_filters, num_filters, 5,  padding=2), nn.ReLU(),
-            nn.Conv1d(num_filters, num_filters, 3,  padding=1), nn.ReLU(),
-            nn.Conv1d(num_filters, num_filters, 3,  padding=1), nn.ReLU(),
+
+            ResBlock(num_filters, 15, first=True),
+            ResBlock(num_filters, 11),
+            ResBlock(num_filters,  7),
+            ResBlock(num_filters,  3),
 
             Lambda(flatten),
             nn.Linear(input_window*num_filters, output_window),
