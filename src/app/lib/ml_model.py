@@ -96,7 +96,7 @@ class MLModel:
     def predict(self, x):
         """Given a list of history data, performs inference and returns predictions"""
         if type(x) == list: x = tensor(x)
-        if len(x.shape) == 1: x = x.unsqueeze()
+        if len(x.shape) == 1: x = x.unsqueeze(dim=0)
         x = x.float().to(get_device())
         normalised_x = (x - self.data_mean) / self.data_std
         offsets = self.__model(normalised_x).squeeze() * self.data_std
@@ -111,7 +111,7 @@ class MLModel:
         torch.save(checkpoint, path)
 
     def load(self, path):
-        checkpoint = torch.load(path)
+        checkpoint = torch.load(path, map_location=self.device)
         self.data_mean = checkpoint['data_mean']
         self.data_std = checkpoint['data_std']
         self.__model.load_state_dict(checkpoint['model'])
