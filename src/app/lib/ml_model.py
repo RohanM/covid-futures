@@ -8,19 +8,23 @@ class ResBlock(nn.Module):
     def __init__(self, num_channels, kernel_size, first=False):
         super().__init__()
         self.conv1 = nn.Conv1d(1 if first else num_channels, num_channels, kernel_size, padding=kernel_size//2)
+        self.bn1 = nn.BatchNorm1d(num_channels)
         self.relu = nn.ReLU()
 
         kern2 = kernel_size if kernel_size <= 3 else kernel_size-2
         pad2 = 1 if kern2 <= 3 else (kern2 // 2)
         self.conv2 = nn.Conv1d(num_channels, num_channels, kern2, padding=pad2)
+        self.bn2 = nn.BatchNorm1d(num_channels)
         #print(f"nn.Conv1d({1 if first else num_channels}, {num_channels}, {kernel_size}, padding={kernel_size//2})")
         #print(f"nn.Conv1d({num_channels}, {num_channels}, {kern2}, padding={pad2})")
 
     def forward(self, x):
         identity = x
         out = self.conv1(x)
+        out = self.bn1(out)
         out = self.relu(out)
         out = self.conv2(out)
+        out = self.bn2(out)
         out += identity
         out = self.relu(out)
         return out
