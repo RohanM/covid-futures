@@ -13,6 +13,7 @@ class MLModel:
         """
         self.data_mean = data_mean
         self.data_std = data_std
+        self.device = get_device()
 
         def add_channel(x): return x.unsqueeze(dim=1)
         def flatten(x): return x.view(x.shape[0], -1)
@@ -38,7 +39,7 @@ class MLModel:
         # Actual learning rate will be defined by the scheduler when fitting
         self.__opt = optim.SGD(self.__model.parameters(), lr=0.01)
 
-    def find_lr(self, dataloader, start_lr=1e-7, epochs_per_step=10):
+    def find_lr(self, dataloader, start_lr=1e-7, epochs_per_step=3):
         lrs, losses = [], []
         loss_func = nn.MSELoss()
 
@@ -76,7 +77,10 @@ class MLModel:
 
     def predict(self, x):
         """Given a list of history data, performs inference and returns predictions"""
-        normalised_x = (tensor([x]).float() - self.data_mean) / self.data_std
+        if type(x) == list: x = tensor(x)
+        if len(x.shape) == 1: x = x.unsqueeze()
+        x = x.float().to(get_device())
+        normalised_x = (x - self.data_mean) / self.data_std
         offsets = self.__model(normalised_x).squeeze() * self.data_std
         return offsets + x[-1]
 
@@ -100,6 +104,8 @@ class MLModel:
         self.__model.train()
         total_loss = 0.
         for xb, yb in dataloader:
+            xb = xb.to(self.device)
+            yb = yb.to(self.device)
             loss = loss_func(self.__model(xb), yb)
             total_loss += loss
             loss.backward()
@@ -112,6 +118,8 @@ class MLModel:
         with torch.no_grad():
             total_loss = 0.
             for xb, yb in dataloader:
+                xb = xb.to(self.device)
+                yb = yb.to(self.device)
                 pred = self.__model(xb)
                 total_loss += loss_func(pred, yb)
         return (total_loss / len(dataloader)).item()
