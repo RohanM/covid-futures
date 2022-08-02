@@ -98,6 +98,11 @@ class PredictionData(db.Model):
 
     prediction = db.relationship('Prediction', back_populates='data')
 
+    @staticmethod
+    def latest_date():
+        """Returns the most recent date we have a prediction for"""
+        return db.session.query(PredictionData.date).order_by(PredictionData.date.desc()).limit(1).scalar()
+
     __table_args__ = (
         UniqueConstraint('prediction_id', 'date', name='uq_prediction_data_prediction_id_date'),
     )
