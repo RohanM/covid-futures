@@ -19,9 +19,9 @@ class MLModelData:
         batch_size: Size of batch for the DataLoader to provide
         """
         self.data_pipeline = [
-            #LoadCases(),
+            LoadCases(),
             #SaveToPT(),
-            LoadFromPT(),
+            #LoadFromPT(),
         ]
         self.stats_pipeline = self.data_pipeline + [
             Stats(),
