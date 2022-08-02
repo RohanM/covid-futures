@@ -1,4 +1,5 @@
 import json
+import numpy as np
 from flask import Blueprint
 from flask import render_template
 
@@ -40,5 +41,5 @@ def build_prediction(prediction):
     return {
         'name': f'Prediction {prediction.name}',
         'labels': labels,
-        'values': values
+        'values': list(map(lambda v: int(np.clip(v, 0, None)), values))
     }
