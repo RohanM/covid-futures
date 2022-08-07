@@ -20,6 +20,7 @@ class MLModelData:
         """
         self.data_pipeline = [
             LoadCases(),
+            RunningMean(window=running_mean_window),
             #SaveToPT(),
             #LoadFromPT(),
         ]
